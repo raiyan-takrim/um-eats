@@ -1,4 +1,3 @@
-import PrimaryBtn from "@/components/PrimaryBtn";
 import check_meal from "/public/check_meal.png";
 import Link from "next/link";
 export default function page() {

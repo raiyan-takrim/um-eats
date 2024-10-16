@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/select"
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import PrimaryBtn from "@/components/PrimaryBtn";
 export default function page() {
     return (

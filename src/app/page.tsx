@@ -1,16 +1,12 @@
-import { Button } from "@/components/ui/button";
 import hero_bg from "/public/hero_bg.png";
 import bowl_Icon from "/public/food_bowl.svg";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import PrimaryBtn from "@/components/PrimaryBtn";
-import SecondaryBtn from "@/components/SecondaryBtn";
 import Link from "next/link";
 import Image from "next/image";
 
