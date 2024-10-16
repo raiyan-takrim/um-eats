@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import check_meal from "/public/check_meal.png";
+import add_meal from "/public/add_meal.png";
 import {
     Select,
     SelectContent,
@@ -35,7 +35,7 @@ export default function page() {
                     </form>
                 </div>
             </div>
-            <div className="h-full w-1/2 overlay bg-blue-50" style={{ background: `url("${check_meal.src}")`, backgroundSize: "cover" }}>
+            <div className="h-full w-1/2 overlay bg-blue-50" style={{ background: `url("${add_meal.src}")`, backgroundRepeat: "no-repeat", backgroundPosition: "center" }}>
             </div>
         </main>
     )
