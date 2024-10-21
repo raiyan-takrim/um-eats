@@ -260,6 +260,9 @@ import React from 'react'
 
 export default function page() {
     return (
-        <div>Oppps! We are under constraction!</div>
+        <div className='flex flex-col place-items-center place-content-center w-screen h-screen bg-neutral text-accent text-2xl font-semibold'>
+            <h1>Oppps! Site is under constraction!</h1>
+            <h3>Comming Soon...🎉</h3>
+        </div>
     )
 }

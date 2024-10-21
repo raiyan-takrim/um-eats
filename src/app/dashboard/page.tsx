@@ -1,5 +1,7 @@
-import { sql } from "@vercel/postgres";
+'use client'
+import { QueryResultRow, sql } from "@vercel/postgres";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 // app/dashboard/page.js
 export const dynamic = 'force-dynamic'; // ensures SSR
@@ -16,9 +18,20 @@ async function getMealsData() {
     return result.rows;
 }
 
-export default async function Dashboard() {
+export default function Dashboard() {
+    const [mealData, setMealData] = useState<QueryResultRow>([]);
     // Fetch meal data
-    const mealData = await getMealsData();
+    useEffect(() => {
+        const fetchMeals = async () => {
+            try {
+                const totalMeals = await getMealsData(); // Await the result of the query
+                setMealData(totalMeals); // Update state with the fetched total meals
+            } catch (error) {
+                console.error("Failed to fetch total meals:", error);
+            }
+        };
+        fetchMeals()
+    }, []);
 
     return (
         <div className="container mx-auto p-8 bg-neutral text-accent h-screen w-screen">
