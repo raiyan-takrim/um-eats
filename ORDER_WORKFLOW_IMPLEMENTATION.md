@@ -1,15 +1,18 @@
 # Order Workflow Implementation Summary
 
 ## Overview
+
 Successfully implemented a Foodpanda-like order tracking system with clear steps for both students and organizations, replacing the previous basic collection mechanism.
 
 ## Database Changes
 
 ### New Enums Added
+
 - **ClaimStatus**: PENDING, CONFIRMED, READY, PICKED_UP, CANCELLED, NO_SHOW
 - **FoodStatus** (extended): Added CONFIRMED, READY, CANCELLED states
 
 ### Schema Updates (Claim Model)
+
 - Changed `status` from FoodStatus to ClaimStatus
 - Added `itemStatus` field (FoodStatus) to sync with FoodItem
 - Added workflow timestamps:
@@ -22,6 +25,7 @@ Successfully implemented a Foodpanda-like order tracking system with clear steps
   - `cancelledBy` - Role of canceller (STUDENT/ORGANIZATION)
 
 ### Migration Applied
+
 - Migration: `20251216054746_add_order_flow_tracking`
 - All existing claims set to PENDING status by default
 - Added status index for performance
@@ -29,6 +33,7 @@ Successfully implemented a Foodpanda-like order tracking system with clear steps
 ## Order Workflow States
 
 ### Student Journey
+
 1. **PENDING** - Order placed, awaiting organization confirmation
 2. **CONFIRMED** - Organization confirmed, preparing food
 3. **READY** - Food is ready, student can collect
@@ -37,6 +42,7 @@ Successfully implemented a Foodpanda-like order tracking system with clear steps
 6. **NO_SHOW** - Student didn't show up (marked by org)
 
 ### Organization Workflow
+
 1. **New Orders** (PENDING) → Confirm or Cancel
 2. **Preparing** (CONFIRMED) → Mark as Ready
 3. **Ready for Pickup** (READY) → Student Collects or No-Show
@@ -45,8 +51,9 @@ Successfully implemented a Foodpanda-like order tracking system with clear steps
 ## Server Actions Updated
 
 ### Student Actions (`src/actions/student.ts`)
+
 - **claimFood()**: Creates claims with status PENDING and itemStatus CLAIMED
-- **markClaimAsCollected()**: 
+- **markClaimAsCollected()**:
   - Validates claim is READY before allowing collection
   - Updates to PICKED_UP status
   - Sets collectedAt timestamp
@@ -54,21 +61,19 @@ Successfully implemented a Foodpanda-like order tracking system with clear steps
   - Only marks listing as COLLECTED when ALL items are collected
 
 ### Organization Actions (`src/actions/organization.ts`)
+
 - **confirmOrder(claimId)**: PENDING → CONFIRMED
   - Sets confirmedAt timestamp
   - Updates both Claim and FoodItem status to CONFIRMED
   - Notifies student
-  
 - **markOrderReady(claimId)**: CONFIRMED → READY
   - Sets readyAt timestamp
   - Updates both Claim and FoodItem status to READY
   - Revalidates both org and student pages
-  
 - **markNoShow(claimId)**: READY → NO_SHOW
   - Releases FoodItem back to AVAILABLE
   - Sets cancellation details
   - Item becomes available for others to claim
-  
 - **cancelOrder(claimId, reason)**: ANY → CANCELLED
   - Can be called by student or organization
   - Validates caller has permission
@@ -77,6 +82,7 @@ Successfully implemented a Foodpanda-like order tracking system with clear steps
   - Records cancellation reason and who cancelled
 
 ### Other Actions Updated
+
 - **rankings.ts**: Changed all COLLECTED references to PICKED_UP
 - **stats.ts**: Changed recent activity to use PICKED_UP status
 - **organization analytics**: Updated impact calculations to use PICKED_UP
@@ -84,7 +90,9 @@ Successfully implemented a Foodpanda-like order tracking system with clear steps
 ## UI Components
 
 ### OrderStatusSteps Component (`src/components/order-status-steps.tsx`)
+
 Visual progress indicator showing:
+
 - ⚪ Order Placed (PENDING)
 - ⚪ Confirmed (CONFIRMED)
 - ⚪ Ready for Pickup (READY)
@@ -93,7 +101,9 @@ Visual progress indicator showing:
 - Special styling for cancelled/no-show states
 
 ### Student Claims Page (`src/app/dashboard/student/claims/page.tsx`)
+
 **Complete redesign with:**
+
 - **Active Orders Section**:
   - OrderStatusSteps component showing progress
   - Order details (category, unit, pickup location)
@@ -110,25 +120,30 @@ Visual progress indicator showing:
 - Real-time updates after any action
 
 ### Organization Claims Page (`src/app/dashboard/organization/claims/page.tsx`)
+
 **Complete redesign with 5 sections:**
 
 1. **New Orders (PENDING)**:
+
    - Yellow alert badge
    - Student contact info (name, email, phone)
    - "Confirm Order" button
    - "Cancel" button with reason dialog
 
 2. **Preparing (CONFIRMED)**:
+
    - Blue badge
    - Timeline showing when confirmed
    - "Mark as Ready" button
 
 3. **Ready for Pickup (READY)**:
+
    - Green badge
    - "Student Collected" button
    - "No Show" button
 
 4. **Completed (PICKED_UP)**:
+
    - Gray badge
    - Shows impact points earned
    - Order history
@@ -139,6 +154,7 @@ Visual progress indicator showing:
    - Shows who cancelled
 
 Each section displays:
+
 - Student contact information
 - Order details
 - Complete timeline of status changes
@@ -147,6 +163,7 @@ Each section displays:
 ## Ranking Preservation
 
 **Critical**: Metrics only increment on PICKED_UP:
+
 - `totalDonations++` only when status becomes PICKED_UP
 - `totalImpactPoints += actualImpact` only when PICKED_UP
 - CANCELLED and NO_SHOW orders don't affect rankings
@@ -155,6 +172,7 @@ Each section displays:
 ## Key Features
 
 ### For Students:
+
 ✅ Clear visibility of order status at all times
 ✅ Step-by-step progress indicator
 ✅ Can cancel orders before they're ready
@@ -162,6 +180,7 @@ Each section displays:
 ✅ Cancellation with optional reason
 
 ### For Organizations:
+
 ✅ Incoming orders require confirmation
 ✅ Two-step process: Confirm → Mark Ready
 ✅ Can cancel orders with explanation
@@ -170,6 +189,7 @@ Each section displays:
 ✅ All status changes logged with timestamps
 
 ### System Benefits:
+
 ✅ Clear order lifecycle management
 ✅ Prevents premature collections
 ✅ Releases items when orders cancelled
@@ -202,25 +222,30 @@ Each section displays:
 ## Files Changed
 
 ### Schema
+
 - `prisma/schema.prisma` - Added ClaimStatus enum, workflow timestamps
 
 ### Server Actions
+
 - `src/actions/student.ts` - Updated claimFood, markClaimAsCollected
 - `src/actions/organization.ts` - Added confirmOrder, markOrderReady, markNoShow, cancelOrder
 - `src/actions/rankings.ts` - Updated to use PICKED_UP
 - `src/actions/stats.ts` - Updated to use PICKED_UP
 
 ### Components
+
 - `src/components/order-status-steps.tsx` - NEW: Progress indicator
 - `src/components/ui/textarea.tsx` - Added for cancel reasons (if not existing)
 
 ### Pages
+
 - `src/app/dashboard/student/claims/page.tsx` - Complete redesign with workflow
 - `src/app/dashboard/organization/claims/page.tsx` - Complete redesign with order management
 
 ## Impact
 
 This implementation transforms UM-Eats from a basic claim system to a professional food order management platform with:
+
 - **Better UX**: Clear expectations and status visibility
 - **Better Communication**: Organizations and students know what's happening
 - **Better Accountability**: Complete tracking of who did what when

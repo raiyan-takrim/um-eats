@@ -6,10 +6,10 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-    Package, 
-    Clock, 
-    CheckCircle2, 
+import {
+    Package,
+    Clock,
+    CheckCircle2,
     ArrowRight,
     Leaf,
     TrendingUp,
@@ -267,9 +267,9 @@ export default function StudentDashboardPage() {
                                         </p>
                                         <div className="flex items-center gap-3 mt-2">
                                             <span className="text-xs text-muted-foreground">
-                                                {new Date(claim.claimedAt).toLocaleDateString('en-US', { 
-                                                    month: 'short', 
-                                                    day: 'numeric' 
+                                                {new Date(claim.claimedAt).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric'
                                                 })}
                                             </span>
                                             {claim.status === 'PICKED_UP' && claim.actualImpactPoints && (
@@ -308,8 +308,8 @@ export default function StudentDashboardPage() {
                             </div>
                         ) : (
                             availableListings.map((listing) => (
-                                <Link 
-                                    key={listing.id} 
+                                <Link
+                                    key={listing.id}
                                     href={`/dashboard/student/browse/${listing.id}`}
                                     className="block"
                                 >
@@ -333,9 +333,9 @@ export default function StudentDashboardPage() {
                                                 </span>
                                                 <span className="flex items-center gap-1">
                                                     <Clock className="h-3 w-3" />
-                                                    Until {new Date(listing.availableUntil).toLocaleTimeString('en-US', { 
-                                                        hour: 'numeric', 
-                                                        minute: '2-digit' 
+                                                    Until {new Date(listing.availableUntil).toLocaleTimeString('en-US', {
+                                                        hour: 'numeric',
+                                                        minute: '2-digit'
                                                     })}
                                                 </span>
                                             </div>
