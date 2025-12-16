@@ -123,3 +123,72 @@ export async function getRecentActivity() {
         return [];
     }
 }
+
+/**
+ * Get top organizations by ranking
+ */
+export async function getTopOrganizations(limit: number = 3) {
+    try {
+        const topOrgs = await prisma.organization.findMany({
+            where: {
+                status: 'APPROVED',
+                ranking: {
+                    not: null,
+                },
+            },
+            orderBy: {
+                ranking: 'asc',
+            },
+            take: limit,
+            select: {
+                id: true,
+                name: true,
+                type: true,
+                logo: true,
+                totalImpactPoints: true,
+                totalDonations: true,
+                sdgScore: true,
+                ranking: true,
+            },
+        });
+
+        return topOrgs;
+    } catch (error) {
+        console.error('Error fetching top organizations:', error);
+        return [];
+    }
+}
+
+/**
+ * Get all ranked organizations
+ */
+export async function getAllRankedOrganizations() {
+    try {
+        const organizations = await prisma.organization.findMany({
+            where: {
+                status: 'APPROVED',
+                ranking: {
+                    not: null,
+                },
+            },
+            orderBy: {
+                ranking: 'asc',
+            },
+            select: {
+                id: true,
+                name: true,
+                type: true,
+                logo: true,
+                totalImpactPoints: true,
+                totalDonations: true,
+                sdgScore: true,
+                ranking: true,
+            },
+        });
+
+        return organizations;
+    } catch (error) {
+        console.error('Error fetching ranked organizations:', error);
+        return [];
+    }
+}

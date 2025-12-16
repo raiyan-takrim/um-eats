@@ -32,7 +32,7 @@ export const auth = betterAuth({
             async mapProfileToUser(profile) {
                 const email = profile.email || '';
                 const role = isUMStudentEmail(email) ? 'STUDENT' : 'ORGANIZATION';
-                
+
                 return {
                     email: profile.email,
                     name: profile.name,

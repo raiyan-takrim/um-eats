@@ -6,7 +6,7 @@ import { Footer } from '@/components/layout/footer';
 import { OrgCard } from '@/components/features/org-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getAllRankedOrganizations } from '@/actions/rankings';
+import { getAllRankedOrganizations } from '@/actions/stats';
 
 export default function RankingsPage() {
     const [organizations, setOrganizations] = useState<any[]>([]);

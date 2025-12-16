@@ -13,8 +13,7 @@ import { Footer } from '@/components/layout/footer';
 import { OrgCard } from '@/components/features/org-card';
 import { useSession } from '@/lib/use-auth';
 import { authClient } from '@/lib/auth-client';
-import { getTopOrganizations } from '@/actions/rankings';
-import { getPlatformStats } from '@/actions/stats';
+import { getTopOrganizations, getPlatformStats } from '@/actions/stats';
 import { formatImpactPoints } from '@/lib/impact-calculator';
 
 function HomePageContent() {

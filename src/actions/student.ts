@@ -4,7 +4,6 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { calculateFoodImpactPoints } from '@/lib/impact-calculator';
-import { calculateOrganizationRankings } from '@/actions/rankings';
 
 export async function browseListings(filters?: {
     search?: string;
@@ -396,11 +395,6 @@ export async function markClaimAsCollected(claimId: string) {
                 });
             }
         });
-
-        // Auto-trigger ranking recalculation (async, no need to wait)
-        calculateOrganizationRankings(true).catch(err =>
-            console.error('Auto-ranking calculation failed:', err)
-        );
 
         return {
             success: true,
