@@ -28,6 +28,19 @@ export const auth = betterAuth({
         google: {
             clientId: process.env.GOOGLE_CLIENT_ID || '',
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+            // Automatically assign role based on email during OAuth
+            async mapProfileToUser(profile) {
+                const email = profile.email || '';
+                const role = isUMStudentEmail(email) ? 'STUDENT' : 'ORGANIZATION';
+                
+                return {
+                    email: profile.email,
+                    name: profile.name,
+                    image: profile.picture,
+                    emailVerified: profile.email_verified,
+                    role, // Set role based on email domain
+                };
+            },
         },
     },
     session: {
