@@ -59,36 +59,14 @@ function HomePageContent() {
         fetchData();
     }, []);
 
-    // Handle role-based redirect after login
+    // Handle redirect parameter after login (only if redirect is specified)
     useEffect(() => {
         if (!isPending && data?.user) {
-            // Assign role based on email domain
-            const assignRoleAndRedirect = async () => {
-                try {
-                    // First, assign role based on email
-                    await fetch('/api/auth/assign-role', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            userId: data.user.id,
-                            email: data.user.email,
-                        }),
-                    });
-
-                    // Handle redirect flow
-                    const redirect = searchParams.get('redirect');
-                    if (redirect) {
-                        router.push(redirect);
-                    } else {
-                        router.push('/dashboard');
-                    }
-                } catch (error) {
-                    console.error('Failed to assign role or redirect:', error);
-                    router.push('/dashboard');
-                }
-            };
-
-            assignRoleAndRedirect();
+            const redirect = searchParams.get('redirect');
+            if (redirect) {
+                // Only redirect if there's a specific redirect parameter
+                router.push(redirect);
+            }
         }
     }, [data, isPending, router, searchParams]);
 
