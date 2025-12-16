@@ -318,28 +318,36 @@ export default function AdminOrganizationsPage() {
                                 className="pl-9"
                             />
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
                             <Button
                                 variant={statusFilter === 'ALL' ? 'default' : 'outline'}
                                 onClick={() => setStatusFilter('ALL')}
+                                size="sm"
+                                className="whitespace-nowrap"
                             >
                                 All
                             </Button>
                             <Button
                                 variant={statusFilter === 'PENDING' ? 'default' : 'outline'}
                                 onClick={() => setStatusFilter('PENDING')}
+                                size="sm"
+                                className="whitespace-nowrap"
                             >
                                 Pending
                             </Button>
                             <Button
                                 variant={statusFilter === 'APPROVED' ? 'default' : 'outline'}
                                 onClick={() => setStatusFilter('APPROVED')}
+                                size="sm"
+                                className="whitespace-nowrap"
                             >
                                 Approved
                             </Button>
                             <Button
                                 variant={statusFilter === 'REJECTED' ? 'default' : 'outline'}
                                 onClick={() => setStatusFilter('REJECTED')}
+                                size="sm"
+                                className="whitespace-nowrap"
                             >
                                 Rejected
                             </Button>

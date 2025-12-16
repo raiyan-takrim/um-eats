@@ -316,28 +316,36 @@ export default function AdminUsersPage() {
                                 className="pl-9"
                             />
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
                             <Button
                                 variant={roleFilter === 'ALL' ? 'default' : 'outline'}
                                 onClick={() => setRoleFilter('ALL')}
+                                size="sm"
+                                className="whitespace-nowrap"
                             >
                                 All
                             </Button>
                             <Button
                                 variant={roleFilter === 'ADMIN' ? 'default' : 'outline'}
                                 onClick={() => setRoleFilter('ADMIN')}
+                                size="sm"
+                                className="whitespace-nowrap"
                             >
                                 Admins
                             </Button>
                             <Button
                                 variant={roleFilter === 'STUDENT' ? 'default' : 'outline'}
                                 onClick={() => setRoleFilter('STUDENT')}
+                                size="sm"
+                                className="whitespace-nowrap"
                             >
                                 Students
                             </Button>
                             <Button
                                 variant={roleFilter === 'ORGANIZATION' ? 'default' : 'outline'}
                                 onClick={() => setRoleFilter('ORGANIZATION')}
+                                size="sm"
+                                className="whitespace-nowrap"
                             >
                                 Organizations
                             </Button>
