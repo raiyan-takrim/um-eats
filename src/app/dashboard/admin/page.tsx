@@ -18,13 +18,9 @@ import {
     TrendingUp,
     ArrowUpRight,
     ShieldBan,
-    Award,
-    Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { getAdminDashboardStats } from '@/actions/admin';
-import { calculateOrganizationRankings } from '@/actions/rankings';
-import { toast } from 'sonner';
 
 type DashboardData = {
     stats: {
@@ -85,7 +81,6 @@ export default function AdminDashboardPage() {
     const router = useRouter();
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
-    const [calculatingRankings, setCalculatingRankings] = useState(false);
 
     useEffect(() => {
         if (!isPending && (!data?.user || data.user.role !== 'ADMIN')) {
@@ -110,21 +105,6 @@ export default function AdminDashboardPage() {
         }
     };
 
-    const handleCalculateRankings = async () => {
-        setCalculatingRankings(true);
-        try {
-            const result = await calculateOrganizationRankings();
-            toast.success(result.message || 'Organization rankings have been updated successfully.');
-            // Refresh dashboard data
-            await fetchDashboardData();
-        } catch (error) {
-            console.error('Error calculating rankings:', error);
-            toast.error('Failed to calculate rankings. Please try again.');
-        } finally {
-            setCalculatingRankings(false);
-        }
-    };
-
     if (isPending || !data?.user || data.user.role !== 'ADMIN') {
         return null;
     }
@@ -132,32 +112,11 @@ export default function AdminDashboardPage() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold">Admin Overview</h1>
-                    <p className="mt-2 text-muted-foreground">
-                        Monitor platform activity and manage key operations
-                    </p>
-                </div>
-                <Button
-                    onClick={handleCalculateRankings}
-                    disabled={calculatingRankings}
-                    variant="outline"
-                    className="gap-2"
-                    title="Rankings auto-calculate when claims are collected. Use this to manually recalculate."
-                >
-                    {calculatingRankings ? (
-                        <>
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            Calculating...
-                        </>
-                    ) : (
-                        <>
-                            <Award className="h-4 w-4" />
-                            Recalculate Rankings
-                        </>
-                    )}
-                </Button>
+            <div>
+                <h1 className="text-3xl font-bold">Admin Overview</h1>
+                <p className="mt-2 text-muted-foreground">
+                    Monitor platform activity and manage key operations
+                </p>
             </div>
 
             {/* Key Metrics */}
