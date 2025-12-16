@@ -1,0 +1,328 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  ORGANIZATION
+  ADMIN
+}
+
+enum FoodStatus {
+  AVAILABLE // Listing available for claiming
+  CLAIMED // Student claimed, pending org confirmation (NEW: was just CLAIMED)
+  CONFIRMED // Org confirmed the order (NEW)
+  READY // Food ready for pickup (NEW)
+  COLLECTED // Student picked up successfully
+  EXPIRED // Time expired
+  CANCELLED // Cancelled by student or org (NEW)
+}
+
+enum ClaimStatus {
+  PENDING // Just claimed, waiting org confirmation
+  CONFIRMED // Org confirmed, preparing food
+  READY // Food ready for pickup
+  PICKED_UP // Student collected
+  CANCELLED // Order cancelled
+  NO_SHOW // Student didn't show up (NEW)
+}
+
+enum OrganizationType {
+  RESTAURANT
+  EVENT_ORGANIZER
+  CAFE
+  CATERING
+  OTHER
+}
+
+enum OrganizationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  BANNED
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  name          String
+  image         String?
+  role          UserRole @default(STUDENT)
+  phone         String?
+
+  // Ban fields
+  isBanned     Boolean   @default(false)
+  bannedAt     DateTime?
+  bannedReason String?
+  bannedBy     String? // Admin user ID who banned
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organization Organization?
+  claims       Claim[]
+  sessions     Session[]
+  accounts     Account[]
+
+  members     Member[]
+  invitations Invitation[]
+
+  @@index([email])
+  @@index([role])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  activeOrganizationId String?
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                   String    @id @default(cuid())
+  userId               String
+  providerId           String
+  providerType         String    @default("oauth")
+  accountId            String
+  accessToken          String?
+  refreshToken         String?
+  idToken              String?
+  expiresAt            Int?
+  accessTokenExpiresAt DateTime?
+  scope                String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  refreshTokenExpiresAt DateTime?
+  password              String?
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Organization {
+  id          String             @id @default(cuid())
+  userId      String             @unique
+  name        String
+  type        OrganizationType
+  description String?
+  logo        String?
+  address     String
+  phone       String
+  email       String             @unique
+  status      OrganizationStatus @default(PENDING)
+
+  // Verification fields
+  rejectionReason String?
+  verifiedBy      String? // Admin user ID who approved/rejected
+  verifiedAt      DateTime?
+
+  // Ban fields
+  bannedAt     DateTime?
+  bannedReason String?
+  bannedBy     String? // Admin user ID who banned
+
+  latitude  Float
+  longitude Float
+
+  // SDG Metrics
+  totalImpactPoints Float @default(0) // Food Impact Points (FIP) from collected claims
+  totalDonations    Int   @default(0) // Count of collected claims
+  sdgScore          Float @default(0) // Overall performance score (0-100)
+  ranking           Int? // Leaderboard position
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listings FoodListing[]
+
+  slug        String
+  metadata    String?
+  members     Member[]
+  invitations Invitation[]
+
+  @@unique([slug])
+  @@index([status])
+  @@index([sdgScore])
+  @@index([ranking])
+  @@index([type])
+  @@index([userId])
+  @@index([email])
+  @@map("organization")
+}
+
+model FoodListing {
+  id             String   @id @default(cuid())
+  organizationId String
+  title          String
+  description    String
+  category       String // e.g., "Meals", "Bakery", "Snacks", "Beverages"
+  quantity       Int
+  unit           String // e.g., "portions", "kg", "pieces"
+  images         String[] @default([])
+
+  // Availability
+  status         FoodStatus @default(AVAILABLE)
+  availableFrom  DateTime
+  availableUntil DateTime
+  pickupLocation String
+  latitude       Float
+  longitude      Float
+
+  // Nutrition & Tags
+  isVegetarian Boolean  @default(false)
+  isVegan      Boolean  @default(false)
+  isHalal      Boolean  @default(true)
+  allergens    String[] @default([])
+  tags         String[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  items        FoodItem[]
+  claims       Claim[]
+
+  @@index([status])
+  @@index([availableFrom])
+  @@index([availableUntil])
+  @@index([category])
+  @@index([organizationId])
+}
+
+model FoodItem {
+  id            String     @id @default(cuid())
+  foodListingId String
+  status        FoodStatus @default(AVAILABLE)
+  itemNumber    Int // Sequential number within the listing (1, 2, 3, etc.)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  foodListing FoodListing @relation(fields: [foodListingId], references: [id], onDelete: Cascade)
+  claim       Claim?
+
+  @@unique([foodListingId, itemNumber])
+  @@index([foodListingId])
+  @@index([status])
+  @@map("food_item")
+}
+
+model Claim {
+  id         String      @id @default(cuid())
+  foodItemId String?     @unique // Nullable during migration
+  userId     String
+  status     ClaimStatus @default(PENDING)
+  itemStatus FoodStatus  @default(CLAIMED) // Sync with FoodItem status
+
+  // Legacy field - will be removed after migration
+  quantity Int @default(1)
+
+  // Impact tracking
+  estimatedImpactPoints Float @default(0) // Calculated when claimed
+  actualImpactPoints    Float @default(0) // Calculated when picked up
+
+  // Timestamps for tracking the order flow
+  claimedAt   DateTime  @default(now()) // Step 1: Student claims
+  confirmedAt DateTime? // Step 2: Org confirms order
+  readyAt     DateTime? // Step 3: Food ready for pickup
+  collectedAt DateTime? // Step 4: Student picks up
+  cancelledAt DateTime? // If cancelled
+
+  // Cancellation/no-show tracking
+  cancellationReason String?
+  cancelledBy        String? // USER_ID or ORGANIZATION_ID
+
+  // Keep foodListingId for easier queries and backward compatibility
+  foodListingId String
+
+  // Relations
+  foodItem    FoodItem?   @relation(fields: [foodItemId], references: [id], onDelete: Cascade)
+  foodListing FoodListing @relation(fields: [foodListingId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([foodListingId])
+  @@index([foodItemId])
+  @@index([status])
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String       @default("member")
+  createdAt      DateTime
+
+  @@index([organizationId])
+  @@index([userId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String       @default("pending")
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("invitation")
+}
+
+model SystemSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
