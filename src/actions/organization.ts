@@ -1035,7 +1035,7 @@ export async function getOrganizationById(id: string) {
         }
 
         // Check if organization is approved and not banned
-        if (organization.status !== 'APPROVED' || organization.status === 'BANNED') {
+        if (organization.status !== 'APPROVED') {
             return null;
         }
 
@@ -1057,7 +1057,6 @@ export async function getOrganizationById(id: string) {
                     status: 'PICKED_UP',
                 },
                 _sum: {
-                    actualImpactPoints: true,
                     actualImpactPoints: true,
                 },
             }),
