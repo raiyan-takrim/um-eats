@@ -126,19 +126,25 @@ export async function getRecentActivity() {
 
 /**
  * Get top organizations by ranking
+ * Shows organizations with totalImpactPoints > 0, sorted by impact points if no ranking exists
  */
 export async function getTopOrganizations(limit: number = 3) {
     try {
         const topOrgs = await prisma.organization.findMany({
             where: {
                 status: 'APPROVED',
-                ranking: {
-                    not: null,
+                totalImpactPoints: {
+                    gt: 0,
                 },
             },
-            orderBy: {
-                ranking: 'asc',
-            },
+            orderBy: [
+                {
+                    ranking: 'asc',
+                },
+                {
+                    totalImpactPoints: 'desc',
+                },
+            ],
             take: limit,
             select: {
                 id: true,
@@ -161,19 +167,25 @@ export async function getTopOrganizations(limit: number = 3) {
 
 /**
  * Get all ranked organizations
+ * Shows organizations with totalImpactPoints > 0, sorted by impact points if no ranking exists
  */
 export async function getAllRankedOrganizations() {
     try {
         const organizations = await prisma.organization.findMany({
             where: {
                 status: 'APPROVED',
-                ranking: {
-                    not: null,
+                totalImpactPoints: {
+                    gt: 0,
                 },
             },
-            orderBy: {
-                ranking: 'asc',
-            },
+            orderBy: [
+                {
+                    ranking: 'asc',
+                },
+                {
+                    totalImpactPoints: 'desc',
+                },
+            ],
             select: {
                 id: true,
                 name: true,
