@@ -38,14 +38,14 @@ export function Navbar() {
         await signOut();
     };
 
-    const handleSignIn = async () => {
-        await signIn.social({
-            provider: 'google',
-            callbackURL: pathname === '/' && typeof window !== 'undefined'
-                ? window.location.href
-                : '/',
-        });
-    };
+    // const handleSignIn = async () => {
+    //     await signIn.social({
+    //         provider: 'google',
+    //         callbackURL: pathname === '/' && typeof window !== 'undefined'
+    //             ? window.location.href
+    //             : '/',
+    //     });
+    // };
 
     return (
         <>
@@ -103,8 +103,10 @@ export function Navbar() {
                                         </div>
                                     ) : (
                                         <div className="hidden md:flex md:space-x-2">
-                                            <Button onClick={handleSignIn}>
-                                                Sign In with Google
+                                            <Button asChild>
+                                                <Link href='/login?callbackUrl=/dashboard'>
+                                                    Sign In with Google
+                                                </Link>
                                             </Button>
                                         </div>
                                     )}
@@ -159,8 +161,8 @@ export function Navbar() {
                                 href="/"
                                 className={cn(
                                     "px-4 py-2.5 text-sm font-medium rounded-md transition-colors",
-                                    pathname === '/' 
-                                        ? 'bg-primary/10 text-primary' 
+                                    pathname === '/'
+                                        ? 'bg-primary/10 text-primary'
                                         : 'hover:bg-muted'
                                 )}
                             >
@@ -170,8 +172,8 @@ export function Navbar() {
                                 href="/rankings"
                                 className={cn(
                                     "px-4 py-2.5 text-sm font-medium rounded-md transition-colors",
-                                    pathname === '/rankings' 
-                                        ? 'bg-primary/10 text-primary' 
+                                    pathname === '/rankings'
+                                        ? 'bg-primary/10 text-primary'
                                         : 'hover:bg-muted'
                                 )}
                             >
@@ -181,8 +183,8 @@ export function Navbar() {
                                 href="/about"
                                 className={cn(
                                     "px-4 py-2.5 text-sm font-medium rounded-md transition-colors",
-                                    pathname === '/about' 
-                                        ? 'bg-primary/10 text-primary' 
+                                    pathname === '/about'
+                                        ? 'bg-primary/10 text-primary'
                                         : 'hover:bg-muted'
                                 )}
                             >
@@ -209,8 +211,10 @@ export function Navbar() {
                                 </Button>
                             </div>
                         ) : (
-                            <Button onClick={handleSignIn} className="w-full">
-                                Sign In with Google
+                            <Button asChild className="w-full">
+                                <Link href="/login?callbackUrl=/dashboard">
+                                    Sign In with Google
+                                </Link>
                             </Button>
                         )}
                     </div>

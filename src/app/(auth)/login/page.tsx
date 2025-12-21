@@ -20,7 +20,7 @@ function LoginForm() {
         try {
             await signIn.social({
                 provider: 'google',
-                callbackURL: '/',
+                callbackURL: callbackUrl,
             });
         } catch (error) {
             console.error('Sign in error:', error);
@@ -29,7 +29,7 @@ function LoginForm() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4 py-12">
+        <div className="flex min-h-screen items-center justify-center bg-linear-to-b from-primary/5 to-background px-4 py-12">
             <Card className="w-full max-w-2xl shadow-xl">
                 <CardHeader className="space-y-4 text-center">
                     <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 ring-4 ring-primary/20">
@@ -58,13 +58,7 @@ function LoginForm() {
                                 <div className="flex items-start gap-2">
                                     <CheckCircle2 className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                                     <div>
-                                        <span className="font-medium text-foreground">Organizations:</span> Your account will be created by system administrators
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-2">
-                                    <XCircle className="h-4 w-4 mt-0.5 text-destructive shrink-0" />
-                                    <div>
-                                        <span className="font-medium text-foreground">Personal emails</span> (Gmail, Yahoo, etc.) <span className="font-semibold">will be rejected</span>
+                                        <span className="font-medium text-foreground">Organizations:</span> Use your organization email for sign in
                                     </div>
                                 </div>
                             </div>
@@ -108,32 +102,6 @@ function LoginForm() {
                             </>
                         )}
                     </Button>
-
-                    {/* What Happens Next */}
-                    <div className="space-y-3 rounded-lg border bg-muted/30 p-4">
-                        <p className="font-semibold text-sm flex items-center gap-2">
-                            <AlertTriangle className="h-4 w-4 text-primary" />
-                            What happens after sign in?
-                        </p>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li className="flex items-start gap-2">
-                                <span className="font-bold text-primary mt-0.5">1.</span>
-                                <span>Google will show your accounts - <strong className="text-foreground">select your UM student account</strong></span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="font-bold text-primary mt-0.5">2.</span>
-                                <span>System checks if your email ends with <code className="px-1 py-0.5 bg-muted rounded text-xs">@siswa.um.edu.my</code></span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="font-bold text-primary mt-0.5">3.</span>
-                                <span><strong className="text-primary">Valid email:</strong> Account created automatically, redirected to dashboard</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="font-bold text-primary mt-0.5">4.</span>
-                                <span><strong className="text-destructive">Invalid email:</strong> Sign in will fail with an error message</span>
-                            </li>
-                        </ul>
-                    </div>
 
                     {/* Back to Home */}
                     <div className="text-center">

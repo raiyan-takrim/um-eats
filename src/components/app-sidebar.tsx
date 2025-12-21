@@ -4,11 +4,9 @@ import * as React from "react"
 import {
   Building,
   ClipboardList,
-  Command,
   LayoutDashboard,
   Package,
   Settings,
-  SquareTerminal,
   TrendingUp,
   Users,
   UtensilsCrossed,
@@ -28,6 +26,7 @@ import {
 import { useSession } from "@/lib/use-auth"
 import { usePathname, useRouter } from "next/navigation"
 import { getSystemSettings } from "@/actions/admin"
+import Link from "next/link"
 
 const navItems = {
   ADMIN: [
@@ -99,7 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <UtensilsCrossed className="size-4" />
                 </div>
@@ -107,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-medium">{platformName}</span>
                   <span className="truncate text-xs">Food Sharing Platform</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

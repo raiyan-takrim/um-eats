@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight, Leaf, TrendingUp, Users, Award, Sparkles, Clock, MapPin } from 'lucide-react';
+import { ArrowRight, Leaf, TrendingUp, Users, Award, Sparkles, Clock,} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -31,10 +31,10 @@ function HomePageContent() {
     });
     const [loadingStats, setLoadingStats] = useState(true);
 
-    const handleSignInWithRedirect = async (redirectPath: string) => {
+    const handleSignInWithRedirect = async () => {
         await authClient.signIn.social({
             provider: 'google',
-            callbackURL: `${window.location.origin}?redirect=${redirectPath}`,
+            callbackURL: `${window.location.origin}?redirect=/dashboard`,
         });
     };
 
@@ -76,7 +76,7 @@ function HomePageContent() {
 
             <main className="flex-1">
                 {/* Hero Section */}
-                <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-primary/5 py-16 md:py-24">
+                <section className="relative overflow-hidden bg-linear-to-br from-primary/10 via-background to-primary/5 py-16 md:py-24">
                     {/* Decorative background elements */}
                     <div className="absolute inset-0 -z-10">
                         <div className="absolute left-1/4 top-10 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
@@ -93,7 +93,7 @@ function HomePageContent() {
 
                             <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                                 Fighting Food Waste,
-                                <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"> Feeding Students</span>
+                                <span className="bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent"> Feeding Students</span>
                             </h1>
                             <p className="mt-6 text-lg text-muted-foreground sm:text-xl md:mt-8 md:text-2xl">
                                 Connect with restaurants and events at Universiti Malaya to rescue leftover food.
@@ -101,35 +101,28 @@ function HomePageContent() {
                             </p>
                             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
                                 {data?.user ? (
-                                    <Button size="lg" asChild className="w-full sm:w-auto">
-                                        <Link href="/food">
-                                            Browse Available Food
-                                            <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        size="lg"
-                                        onClick={() => handleSignInWithRedirect('/food')}
-                                        className="w-full sm:w-auto"
-                                    >
-                                        Browse Available Food
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                )}
-                                {data?.user ? (
                                     <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
-                                        <Link href="/dashboard/organization/create">Register Your Organization</Link>
+                                        <Link href="/dashboard">Go to Dashboard</Link>
                                     </Button>
                                 ) : (
-                                    <Button
-                                        size="lg"
-                                        variant="outline"
-                                        onClick={() => handleSignInWithRedirect('/dashboard/organization/create')}
-                                        className="w-full sm:w-auto"
-                                    >
-                                        Register Your Organization
-                                    </Button>
+                                    <>
+                                        <Button size="lg" asChild className="w-full sm:w-auto">
+                                            <Link href="/dashboard">
+                                                Browse Available Food
+                                                <ArrowRight className="ml-2 h-4 w-4" />
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            size="lg"
+                                            variant="outline"
+                                            className="w-full sm:w-auto"
+                                            asChild
+                                        >
+                                            <Link href="/dashboard">
+                                                Register Your Organization
+                                            </Link>
+                                        </Button>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -137,7 +130,7 @@ function HomePageContent() {
                 </section>
 
                 {/* Impact Stats - Real Time Data */}
-                <section className="border-y bg-gradient-to-b from-background to-muted/20 py-12 md:py-16">
+                <section className="border-y bg-linear-to-b from-background to-muted/20 py-12 md:py-16">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="mb-8 text-center">
                             <h2 className="text-2xl font-bold md:text-3xl">Our Impact So Far</h2>
@@ -146,7 +139,7 @@ function HomePageContent() {
 
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                             {/* Impact Points Card */}
-                            <Card className="border-primary/20 bg-gradient-to-br from-background to-primary/5 transition-all hover:shadow-lg hover:scale-105">
+                            <Card className="border-primary/20 bg-linear-to-br from-background to-primary/5 transition-all hover:shadow-lg hover:scale-105">
                                 <CardContent className="flex flex-col items-center p-6">
                                     <div className="rounded-full bg-primary/10 p-4 ring-4 ring-primary/10">
                                         <Leaf className="h-7 w-7 text-primary" />
@@ -164,7 +157,7 @@ function HomePageContent() {
                             </Card>
 
                             {/* Students Helped Card */}
-                            <Card className="border-primary/20 bg-gradient-to-br from-background to-blue-500/5 transition-all hover:shadow-lg hover:scale-105">
+                            <Card className="border-primary/20 bg-linear-to-br from-background to-blue-500/5 transition-all hover:shadow-lg hover:scale-105">
                                 <CardContent className="flex flex-col items-center p-6">
                                     <div className="rounded-full bg-blue-500/10 p-4 ring-4 ring-blue-500/10">
                                         <Users className="h-7 w-7 text-blue-600" />
@@ -182,7 +175,7 @@ function HomePageContent() {
                             </Card>
 
                             {/* Donations Card */}
-                            <Card className="border-primary/20 bg-gradient-to-br from-background to-green-500/5 transition-all hover:shadow-lg hover:scale-105">
+                            <Card className="border-primary/20 bg-linear-to-br from-background to-green-500/5 transition-all hover:shadow-lg hover:scale-105">
                                 <CardContent className="flex flex-col items-center p-6">
                                     <div className="rounded-full bg-green-500/10 p-4 ring-4 ring-green-500/10">
                                         <TrendingUp className="h-7 w-7 text-green-600" />
@@ -200,7 +193,7 @@ function HomePageContent() {
                             </Card>
 
                             {/* Partners Card */}
-                            <Card className="border-primary/20 bg-gradient-to-br from-background to-amber-500/5 transition-all hover:shadow-lg hover:scale-105">
+                            <Card className="border-primary/20 bg-linear-to-br from-background to-amber-500/5 transition-all hover:shadow-lg hover:scale-105">
                                 <CardContent className="flex flex-col items-center p-6">
                                     <div className="rounded-full bg-amber-500/10 p-4 ring-4 ring-amber-500/10">
                                         <Award className="h-7 w-7 text-amber-600" />
@@ -267,7 +260,7 @@ function HomePageContent() {
                                     <OrgCard key={org.id} organization={org} rank={index + 1} />
                                 ))
                             ) : (
-                                <Card className="border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5">
+                                <Card className="border-2 border-primary/20 bg-linear-to-br from-background to-primary/5">
                                     <CardContent className="p-10 text-center">
                                         <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                                             <Award className="h-8 w-8 text-primary" />
@@ -329,11 +322,11 @@ function HomePageContent() {
 
                         <div className="relative grid grid-cols-1 gap-8 md:grid-cols-3">
                             {/* Connection lines for desktop */}
-                            <div className="absolute left-0 right-0 top-[60px] hidden h-0.5 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0 md:block" />
+                            <div className="absolute left-0 right-0 top-15 hidden h-0.5 bg-linear-to-r from-primary/0 via-primary/50 to-primary/0 md:block" />
 
-                            <Card className="relative border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 transition-all hover:shadow-xl hover:scale-105">
+                            <Card className="relative border-2 border-primary/20 bg-linear-to-br from-background to-primary/5 transition-all hover:shadow-xl hover:scale-105">
                                 <CardContent className="p-8">
-                                    <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-2xl font-bold text-primary-foreground shadow-lg">
+                                    <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-primary/80 text-2xl font-bold text-primary-foreground shadow-lg">
                                         1
                                     </div>
                                     <h3 className="mb-3 text-2xl font-bold">Browse Food</h3>
@@ -343,9 +336,9 @@ function HomePageContent() {
                                 </CardContent>
                             </Card>
 
-                            <Card className="relative border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 transition-all hover:shadow-xl hover:scale-105">
+                            <Card className="relative border-2 border-primary/20 bg-linear-to-br from-background to-primary/5 transition-all hover:shadow-xl hover:scale-105">
                                 <CardContent className="p-8">
-                                    <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-2xl font-bold text-primary-foreground shadow-lg">
+                                    <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-primary/80 text-2xl font-bold text-primary-foreground shadow-lg">
                                         2
                                     </div>
                                     <h3 className="mb-3 text-2xl font-bold">Claim Your Meal</h3>
@@ -355,9 +348,9 @@ function HomePageContent() {
                                 </CardContent>
                             </Card>
 
-                            <Card className="relative border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 transition-all hover:shadow-xl hover:scale-105">
+                            <Card className="relative border-2 border-primary/20 bg-linear-to-br from-background to-primary/5 transition-all hover:shadow-xl hover:scale-105">
                                 <CardContent className="p-8">
-                                    <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-2xl font-bold text-primary-foreground shadow-lg">
+                                    <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-primary/80 text-2xl font-bold text-primary-foreground shadow-lg">
                                         3
                                     </div>
                                     <h3 className="mb-3 text-2xl font-bold">Collect & Enjoy</h3>
@@ -378,9 +371,9 @@ function HomePageContent() {
                 </section>
 
                 {/* CTA Section */}
-                <section className="border-t bg-gradient-to-b from-muted/30 to-background py-16 md:py-20">
+                <section className="border-t bg-linear-to-b from-muted/30 to-background py-16 md:py-20">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <Card className="overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-background shadow-2xl">
+                        <Card className="overflow-hidden border-2 border-primary/30 bg-linear-to-br from-primary/10 via-primary/5 to-background shadow-2xl">
                             <CardContent className="relative p-10 text-center md:p-16">
                                 {/* Decorative elements */}
                                 <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
@@ -411,7 +404,7 @@ function HomePageContent() {
                                             <span>Community Recognition</span>
                                         </div>
                                     </div>
-                                    {data?.user ? (
+                                    {data?.user?.role == "ORGANIZATION" ? (
                                         <Button size="lg" asChild className="mt-8 shadow-lg">
                                             <Link href="/dashboard/organization/create">
                                                 Register Your Organization
@@ -421,11 +414,13 @@ function HomePageContent() {
                                     ) : (
                                         <Button
                                             size="lg"
-                                            onClick={() => handleSignInWithRedirect('/dashboard/organization/create')}
+                                            asChild
                                             className="mt-8 shadow-lg"
                                         >
-                                            Register Your Organization
+                                                <Link href="/login?callbackUrl=/dashboard">
+                                                Register Your Organization
                                             <ArrowRight className="ml-2 h-4 w-4" />
+                                            </Link>
                                         </Button>
                                     )}
                                 </div>
