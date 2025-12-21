@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { calculateFoodImpactPoints } from '@/lib/impact-calculator';
+import { updateOrganizationSDGScore } from '@/lib/sdg-calculator';
 
 export async function browseListings(filters?: {
     search?: string;
@@ -395,6 +396,14 @@ export async function markClaimAsCollected(claimId: string) {
                 });
             }
         });
+
+        // Update SDG Score automatically after collection
+        try {
+            await updateOrganizationSDGScore(claim.foodListing.organizationId);
+        } catch (error) {
+            console.error('Error updating SDG score:', error);
+            // Don't fail the whole operation if SDG update fails
+        }
 
         return {
             success: true,

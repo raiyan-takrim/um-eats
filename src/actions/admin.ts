@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { recalculateAllSDGScores } from '@/lib/sdg-calculator';
 
 export async function getAllOrganizations() {
     try {
@@ -829,6 +830,35 @@ export async function getUserProfile() {
         return { user };
     } catch (error) {
         console.error('Error fetching user profile:', error);
+        throw error;
+    }
+}
+
+/**
+ * Recalculate SDG scores for all approved organizations
+ * This can be run manually by admins or scheduled as a cron job
+ */
+export async function recalculateOrganizationScores() {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session?.user || session.user.role !== 'ADMIN') {
+            throw new Error('Unauthorized');
+        }
+
+        const updated = await recalculateAllSDGScores();
+
+        revalidatePath('/dashboard/admin');
+        revalidatePath('/rankings');
+
+        return {
+            success: true,
+            message: `Successfully updated SDG scores for ${updated} organizations`
+        };
+    } catch (error) {
+        console.error('Error recalculating organization scores:', error);
         throw error;
     }
 }
