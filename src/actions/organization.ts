@@ -1004,3 +1004,81 @@ export async function cancelOrder(claimId: string, reason?: string) {
         throw error;
     }
 }
+
+export async function getOrganizationById(id: string) {
+    try {
+        const organization = await prisma.organization.findUnique({
+            where: {
+                id,
+            },
+            include: {
+                listings: {
+                    where: {
+                        status: 'AVAILABLE',
+                    },
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                    take: 50, // Limit to recent items
+                },
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+
+        if (!organization) {
+            return null;
+        }
+
+        // Check if organization is approved and not banned
+        if (organization.status !== 'APPROVED' || organization.status === 'BANNED') {
+            return null;
+        }
+
+        // Get organization stats
+        const [totalDonations, totalImpactPoints, activeListings] = await Promise.all([
+            prisma.claim.count({
+                where: {
+                    foodListing: {
+                        organizationId: id,
+                    },
+                    status: 'PICKED_UP',
+                },
+            }),
+            prisma.claim.aggregate({
+                where: {
+                    foodListing: {
+                        organizationId: id,
+                    },
+                    status: 'PICKED_UP',
+                },
+                _sum: {
+                    actualImpactPoints: true,
+                    actualImpactPoints: true,
+                },
+            }),
+            prisma.foodListing.count({
+                where: {
+                    organizationId: id,
+                    status: 'AVAILABLE',
+                },
+            }),
+        ]);
+
+        return {
+            ...organization,
+            stats: {
+                totalDonations,
+                totalImpactPoints: totalImpactPoints._sum.actualImpactPoints || 0,
+                activeListings,
+            },
+        };
+    } catch (error) {
+        console.error('Error fetching organization by ID:', error);
+        throw error;
+    }
+}
