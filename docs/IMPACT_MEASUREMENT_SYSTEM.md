@@ -199,32 +199,42 @@ export function calculateFoodImpactPoints(
 
 | Event                     | Action                     | Impact Field Updated                                          |
 | ------------------------- | -------------------------- | ------------------------------------------------------------- |
-| **Student claims food**   | Calculate estimated impact | `claim.estimatedImpactPoints` = FIP based on claimed quantity |
-| **Student collects food** | Calculate actual impact    | `claim.actualImpactPoints` = FIP based on claimed quantity    |
+| **Student claims food**   | Calculate estimated impact | `claim.estimatedImpactPoints` = FIP based on 1 item           |
+| **Student collects food** | Calculate actual impact    | `claim.actualImpactPoints` = FIP based on 1 item              |
 |                           |                            | `organization.totalImpactPoints` += actual impact             |
 |                           |                            | `organization.totalDonations` += 1                            |
-| **Daily ranking update**  | Recalculate all org scores | `organization.sdgScore` = weighted formula                    |
-|                           |                            | `organization.ranking` = position by sdgScore                 |
+|                           | Automatic SDG recalculation | `organization.sdgScore` = weighted formula (auto-triggered)   |
+| **Admin manual trigger**  | Recalculate all org scores | `organization.sdgScore` for all organizations (optional)      |
+|                           |                            | `organization.ranking` can be assigned (future feature)       |
 
 ### 4.4 SDG Score Calculation
 
 The overall **SDG Score (0-100)** considers multiple factors:
 
 ```typescript
-// Weighted scoring system
+// Weighted scoring system (must total to 1.0)
 const sdgScore =
-  impactPointsScore * 0.25 + // 25% - Total FIP accumulated
-  donationFrequencyScore * 0.2 + // 20% - Number of completed donations
-  successRateScore * 0.15 + // 15% - Collection rate (collected/claimed)
-  activeListingsScore * 0.1 + // 10% - Current active listings
-  responseTimeScore * 0.1 + // 10% - Avg time to first claim
-  varietyScore * 0.1 + // 10% - Category diversity
-  recentActivityScore * 0.05 + // 5% - Recent 30-day donations
-  accountAgeScore * 0.05; // 5% - Platform tenure
+  impactPointsScore * 0.25 +     // 25% - Total FIP accumulated (log scale)
+  donationFrequencyScore * 0.20 + // 20% - Number of completed donations
+  successRateScore * 0.15 +       // 15% - Collection rate (collected/claimed)
+  activeListingsScore * 0.10 +    // 10% - Current active listings
+  varietyScore * 0.10 +           // 10% - Category diversity
+  recentActivityScore * 0.10 +    // 10% - Recent 30-day donations
+  accountAgeScore * 0.10;         // 10% - Platform tenure
 
-// Normalize to 0-100 scale
-finalScore = Math.min(sdgScore * 100, 100);
+// Convert to 0-100 scale
+finalScore = Math.round(sdgScore * 100);
 ```
+
+**Scoring Scales:**
+
+- **Impact Points**: Logarithmic scale (log₁₀(FIP + 1) / log₁₀(11)) - max at ~10 FIP
+- **Donation Frequency**: Linear up to 50 donations
+- **Success Rate**: Ratio of collected/total claims (0-100%)
+- **Active Listings**: Linear up to 10 active listings
+- **Variety**: Linear up to 6 categories (Meals, Bakery, Snacks, Beverages, Fruits, Others)
+- **Recent Activity**: Linear up to 10 donations in last 30 days
+- **Account Age**: Linear up to 180 days (6 months)
 
 **Why this weighting?**
 
