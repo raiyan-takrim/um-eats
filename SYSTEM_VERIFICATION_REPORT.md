@@ -14,11 +14,13 @@ This report verifies the correctness of the Food Impact Points (FIP) calculation
 ## 1. FIP Calculation System ✅
 
 ### Formula Verification
+
 ```
 FIP = Quantity × Average Weight (kg) × Impact Multiplier
 ```
 
 ### Implementation Status: ✅ CORRECT
+
 - **Location:** `src/lib/impact-calculator.ts`
 - **Function:** `calculateFoodImpactPoints(category, unit, quantity)`
 - **Input Validation:** ✅ Validates category, unit, and quantity > 0
@@ -28,12 +30,15 @@ FIP = Quantity × Average Weight (kg) × Impact Multiplier
 ### Test Case Verification
 
 #### Test 1: Beverages (pieces)
+
 **Input:** 2 pieces of beverages (bottles)
+
 - Category: Beverages
 - Unit: pieces
 - Quantity: 2
 
 **Expected Calculation:**
+
 ```
 FIP = 2 × 0.50 kg × 0.4
     = 2 × 0.20
@@ -43,11 +48,13 @@ FIP = 2 × 0.50 kg × 0.4
 **Actual Result:** ✅ 0.4 FIP (CORRECT)
 
 #### Test 2: Single Beverage
+
 **Input:** 1 piece of beverage
 **Expected:** 0.2 FIP
 **Actual:** ✅ 0.2 FIP (CORRECT)
 
 #### Test 3: Multiple Items
+
 **Input:** 10 pieces of beverages
 **Expected:** 2.0 FIP
 **Actual:** ✅ 2.0 FIP (CORRECT)
@@ -56,21 +63,22 @@ FIP = 2 × 0.50 kg × 0.4
 
 All categories verified against documentation:
 
-| Category   | Unit     | Weight (kg) | Multiplier | Status |
-|------------|----------|-------------|------------|--------|
-| Meals      | portions | 0.35        | 1.0        | ✅     |
-| Meals      | pieces   | 0.35        | 1.0        | ✅     |
-| Bakery     | pieces   | 0.08        | 0.8        | ✅     |
-| Snacks     | pieces   | 0.05        | 0.6        | ✅     |
-| **Beverages** | **pieces** | **0.50** | **0.4** | ✅ |
-| Fruits     | pieces   | 0.20        | 0.9        | ✅     |
-| Others     | pieces   | 0.20        | 0.7        | ✅     |
+| Category      | Unit       | Weight (kg) | Multiplier | Status |
+| ------------- | ---------- | ----------- | ---------- | ------ |
+| Meals         | portions   | 0.35        | 1.0        | ✅     |
+| Meals         | pieces     | 0.35        | 1.0        | ✅     |
+| Bakery        | pieces     | 0.08        | 0.8        | ✅     |
+| Snacks        | pieces     | 0.05        | 0.6        | ✅     |
+| **Beverages** | **pieces** | **0.50**    | **0.4**    | ✅     |
+| Fruits        | pieces     | 0.20        | 0.9        | ✅     |
+| Others        | pieces     | 0.20        | 0.7        | ✅     |
 
 ---
 
 ## 2. SDG Score Calculation System ✅
 
 ### Formula Verification
+
 ```typescript
 SDG Score = (
   impactScore × 0.25 +           // 25% - Total FIP (log scale)
@@ -86,6 +94,7 @@ SDG Score = (
 **Total Weight:** 1.00 (100%) ✅
 
 ### Implementation Status: ✅ CORRECT
+
 - **Location:** `src/lib/sdg-calculator.ts`
 - **Function:** `calculateSDGScore(metrics)`
 - **Normalization:** Each component normalized to 0-1 range
@@ -94,27 +103,33 @@ SDG Score = (
 ### Scoring Scale Details ✅
 
 1. **Impact Points (25%)** - Logarithmic Scale
+
    - Formula: `log₁₀(FIP + 1) / log₁₀(11)`
    - Max score at ~10 FIP
    - Prevents dominance by high performers
 
 2. **Donation Frequency (20%)** - Linear Scale
+
    - Max at 50 donations
    - Score = donations / 50
 
 3. **Success Rate (15%)** - Percentage
+
    - Score = collected / total claims
    - Direct ratio (0-1)
 
 4. **Active Listings (10%)** - Linear Scale
+
    - Max at 10 active listings
    - Score = listings / 10
 
 5. **Variety (10%)** - Linear Scale
+
    - Max at 6 categories
    - Score = categories / 6
 
 6. **Recent Activity (10%)** - Linear Scale
+
    - Max at 10 donations in 30 days
    - Score = recent / 10
 
@@ -125,6 +140,7 @@ SDG Score = (
 ### Real Test Case Verification
 
 **Organization:** RTS CAFE
+
 - Total Impact Points: 0.4 FIP
 - Total Donations: 2
 - Success Rate: 100% (2/2)
@@ -136,6 +152,7 @@ SDG Score = (
 **Calculated Score:** 24/100 ✅
 
 **Component Breakdown:**
+
 - Impact: log₁₀(1.4)/log₁₀(11) × 0.25 = ~0.03
 - Donations: (2/50) × 0.20 = 0.008
 - Success: (1.0) × 0.15 = 0.15
@@ -152,13 +169,17 @@ SDG Score = (
 ### Complete User Journey Verification
 
 #### Step 1: Organization Creates Listing ✅
+
 **Location:** `src/actions/organization.ts`
+
 - Creates food listing with category, unit, quantity
 - Generates individual food items
 - **Impact:** No FIP calculated yet (correct - only on collection)
 
 #### Step 2: Student Claims Food ✅
+
 **Location:** `src/actions/student.ts` → `claimFood()`
+
 - Reserves specific food item(s)
 - Calculates **estimated** impact per item
 - Stores as `claim.estimatedImpactPoints`
@@ -166,12 +187,15 @@ SDG Score = (
 - **Organization metrics:** Not updated yet ✅
 
 #### Step 3: Student Collects Food ✅
+
 **Location:** `src/actions/student.ts` → `markClaimAsCollected()`
+
 - Verifies claim status is READY
 - Calculates **actual** impact per item (quantity = 1)
 - **Formula:** `calculateFoodImpactPoints(category, unit, 1)`
 
 **Database Transaction (Atomic):**
+
 1. Updates claim status to PICKED_UP ✅
 2. Stores actualImpactPoints ✅
 3. Updates food item status to COLLECTED ✅
@@ -179,13 +203,16 @@ SDG Score = (
 5. Increments organization.totalImpactPoints (+actualImpact) ✅
 
 **Automatic Trigger:**
+
 - Calls `updateOrganizationSDGScore(organizationId)` ✅
 - Recalculates SDG Score immediately ✅
 - Updates organization.sdgScore in database ✅
 - Error handling: Non-blocking (operation succeeds even if SDG update fails) ✅
 
 #### Step 4: Leaderboard Display ✅
+
 **Location:** `src/actions/stats.ts`
+
 - Queries organizations with totalImpactPoints > 0 ✅
 - Orders by ranking (if exists), then by totalImpactPoints DESC ✅
 - Returns sdgScore for display ✅
@@ -197,21 +224,26 @@ SDG Score = (
 ### Corrections Made
 
 #### Issue 1: SDG Score Weighting Mismatch
+
 **Problem:** Documentation showed outdated weights (response time, different percentages)
 **Fix:** ✅ Updated documentation to match actual implementation
+
 - Removed non-existent "responseTimeScore"
 - Updated weights to match actual 25/20/15/10/10/10/10 split
 - Added scaling details for each component
 
 #### Issue 2: Trigger Description
+
 **Problem:** Documentation mentioned "daily ranking update"
 **Fix:** ✅ Updated to "Automatic SDG recalculation" triggered on collection
 
 #### Issue 3: Quantity Calculation Clarity
+
 **Problem:** Documentation said "claimed quantity" (ambiguous)
 **Fix:** ✅ Clarified that calculation is always per item (quantity = 1)
 
 ### Current Documentation Status
+
 - ✅ `docs/IMPACT_MEASUREMENT_SYSTEM.md` - Fully accurate
 - ✅ `src/lib/impact-calculator.ts` - Comments match behavior
 - ✅ `src/lib/sdg-calculator.ts` - Well documented
@@ -222,17 +254,20 @@ SDG Score = (
 ## 5. Edge Cases & Error Handling ✅
 
 ### FIP Calculation
+
 - ✅ Invalid category/unit → Uses default values (0.2kg, 0.7 multiplier)
 - ✅ Quantity = 0 or negative → Returns 0 FIP
 - ✅ Missing parameters → Returns 0 FIP
 
 ### SDG Score Calculation
+
 - ✅ No donations → Score based on other factors
 - ✅ No claims → Success rate = 0
 - ✅ Division by zero → Protected with conditional checks
 - ✅ New organization → Account age and other factors still contribute
 
 ### Transaction Integrity
+
 - ✅ Database updates are atomic (all or nothing)
 - ✅ SDG update failure doesn't rollback collection
 - ✅ Error logging for debugging
@@ -242,6 +277,7 @@ SDG Score = (
 ## 6. Performance Considerations ✅
 
 ### Optimization
+
 - ✅ SDG calculation runs after transaction completes
 - ✅ Non-blocking (doesn't slow down user experience)
 - ✅ Error caught and logged, doesn't crash
@@ -249,6 +285,7 @@ SDG Score = (
 - ✅ Calculated values cached in organization table
 
 ### Scalability
+
 - ✅ Can handle thousands of collections per day
 - ✅ O(1) complexity for FIP calculation
 - ✅ O(1) complexity for SDG score per organization
@@ -259,7 +296,9 @@ SDG Score = (
 ## 7. Manual Override & Admin Tools ✅
 
 ### Admin Function Available
+
 **Location:** `src/actions/admin.ts` → `recalculateOrganizationScores()`
+
 - Manually triggers SDG recalculation for all organizations
 - Useful for:
   - Initial system setup
@@ -269,6 +308,7 @@ SDG Score = (
 
 **Script Available:**
 **Location:** `prisma/recalculate-sdg-scores.ts`
+
 - Command line tool for bulk recalculation
 - Shows progress and results
 - Handles errors gracefully
@@ -278,6 +318,7 @@ SDG Score = (
 ## 8. Final Verification Checklist ✅
 
 ### Code Implementation
+
 - [x] FIP formula matches documentation
 - [x] SDG score weights total to 100%
 - [x] All scaling functions are correct
@@ -286,6 +327,7 @@ SDG Score = (
 - [x] Error handling in place
 
 ### Documentation
+
 - [x] Formula examples are accurate
 - [x] Weight matrix matches code
 - [x] SDG components documented with scales
@@ -293,12 +335,14 @@ SDG Score = (
 - [x] No outdated references
 
 ### Testing
+
 - [x] Real test case verified (0.4 FIP, Score 24)
 - [x] Multiple quantity scenarios tested
 - [x] Edge cases handled
 - [x] Manual recalculation script works
 
 ### User Experience
+
 - [x] Impact points update immediately
 - [x] SDG score updates automatically
 - [x] Leaderboard shows correct data
@@ -323,6 +367,7 @@ SDG Score = (
 ### No Critical Issues Found
 
 All components are working as designed. The system correctly:
+
 1. Calculates impact points per item
 2. Updates organization metrics atomically
 3. Triggers SDG score recalculation automatically
@@ -338,6 +383,7 @@ All components are working as designed. The system correctly:
 The system is functioning correctly and can be confidently deployed to production.
 
 ### Future Enhancements (Optional)
+
 1. Add ranking field assignment based on sdgScore (currently sorting by sdgScore works)
 2. Add response time tracking (mentioned in old docs but not critical)
 3. Add caching layer for leaderboard queries (optimization for scale)

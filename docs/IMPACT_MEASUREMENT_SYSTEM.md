@@ -197,15 +197,15 @@ export function calculateFoodImpactPoints(
 
 ### 4.3 When Impact is Calculated
 
-| Event                     | Action                     | Impact Field Updated                                          |
-| ------------------------- | -------------------------- | ------------------------------------------------------------- |
-| **Student claims food**   | Calculate estimated impact | `claim.estimatedImpactPoints` = FIP based on 1 item           |
-| **Student collects food** | Calculate actual impact    | `claim.actualImpactPoints` = FIP based on 1 item              |
-|                           |                            | `organization.totalImpactPoints` += actual impact             |
-|                           |                            | `organization.totalDonations` += 1                            |
-|                           | Automatic SDG recalculation | `organization.sdgScore` = weighted formula (auto-triggered)   |
-| **Admin manual trigger**  | Recalculate all org scores | `organization.sdgScore` for all organizations (optional)      |
-|                           |                            | `organization.ranking` can be assigned (future feature)       |
+| Event                     | Action                      | Impact Field Updated                                        |
+| ------------------------- | --------------------------- | ----------------------------------------------------------- |
+| **Student claims food**   | Calculate estimated impact  | `claim.estimatedImpactPoints` = FIP based on 1 item         |
+| **Student collects food** | Calculate actual impact     | `claim.actualImpactPoints` = FIP based on 1 item            |
+|                           |                             | `organization.totalImpactPoints` += actual impact           |
+|                           |                             | `organization.totalDonations` += 1                          |
+|                           | Automatic SDG recalculation | `organization.sdgScore` = weighted formula (auto-triggered) |
+| **Admin manual trigger**  | Recalculate all org scores  | `organization.sdgScore` for all organizations (optional)    |
+|                           |                             | `organization.ranking` can be assigned (future feature)     |
 
 ### 4.4 SDG Score Calculation
 
@@ -214,13 +214,13 @@ The overall **SDG Score (0-100)** considers multiple factors:
 ```typescript
 // Weighted scoring system (must total to 1.0)
 const sdgScore =
-  impactPointsScore * 0.25 +     // 25% - Total FIP accumulated (log scale)
-  donationFrequencyScore * 0.20 + // 20% - Number of completed donations
-  successRateScore * 0.15 +       // 15% - Collection rate (collected/claimed)
-  activeListingsScore * 0.10 +    // 10% - Current active listings
-  varietyScore * 0.10 +           // 10% - Category diversity
-  recentActivityScore * 0.10 +    // 10% - Recent 30-day donations
-  accountAgeScore * 0.10;         // 10% - Platform tenure
+  impactPointsScore * 0.25 + // 25% - Total FIP accumulated (log scale)
+  donationFrequencyScore * 0.2 + // 20% - Number of completed donations
+  successRateScore * 0.15 + // 15% - Collection rate (collected/claimed)
+  activeListingsScore * 0.1 + // 10% - Current active listings
+  varietyScore * 0.1 + // 10% - Category diversity
+  recentActivityScore * 0.1 + // 10% - Recent 30-day donations
+  accountAgeScore * 0.1; // 10% - Platform tenure
 
 // Convert to 0-100 scale
 finalScore = Math.round(sdgScore * 100);

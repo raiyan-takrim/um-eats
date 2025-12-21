@@ -7,6 +7,7 @@ FIP = Quantity × Weight (kg) × Multiplier
 ```
 
 ### Example: 2 Beverage Bottles
+
 ```
 FIP = 2 × 0.50 × 0.4 = 0.4 FIP
 ```
@@ -106,6 +107,7 @@ FIP = 2 × 0.50 × 0.4 = 0.4 FIP
 ## 📈 Real Example: RTS CAFE
 
 ### Input Data
+
 - Impact Points: 0.4 FIP
 - Donations: 2
 - Claims: 2 total, 2 collected (100% success)
@@ -115,6 +117,7 @@ FIP = 2 × 0.50 × 0.4 = 0.4 FIP
 - Age: 6 days
 
 ### Score Calculation
+
 ```
 Impact Score:   log₁₀(1.4)/log₁₀(11) × 0.25 = 0.030
 Donation Score: 2/50 × 0.20                 = 0.008
@@ -133,18 +136,21 @@ Final SDG Score = 0.228 × 100 = 23 → 24    (rounded)
 ## 🔍 Quick Verification Checklist
 
 ### For FIP Calculation:
+
 - [ ] Check category in FOOD_IMPACT_MATRIX
-- [ ] Verify unit exists for that category  
+- [ ] Verify unit exists for that category
 - [ ] Multiply: quantity × weight × multiplier
 - [ ] Round to 2 decimal places
 
 ### For SDG Score:
+
 - [ ] All 7 components calculated (0-1 range)
 - [ ] Weights sum to 100% (0.25+0.20+0.15+0.10+0.10+0.10+0.10)
 - [ ] Final score converted to 0-100 scale
 - [ ] Result rounded to integer
 
 ### For Triggering:
+
 - [ ] Collection updates organization metrics atomically
 - [ ] SDG score recalculation triggered automatically
 - [ ] Error handling prevents operation failure
@@ -174,12 +180,14 @@ A: Correct! Impact is logarithmic scaled and only 25% of total score
 ## 🛠️ Manual Recalculation
 
 ### Admin Action
+
 ```typescript
 // In admin panel
-await recalculateOrganizationScores()
+await recalculateOrganizationScores();
 ```
 
 ### Command Line
+
 ```bash
 npx tsx prisma/recalculate-sdg-scores.ts
 ```
